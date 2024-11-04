@@ -55,7 +55,13 @@ def inputConsistente(perguntaInput, tipoDado):
             dadoTemp = input(f'\n{perguntaInput}')
             #verificação se o usuário escreveu apenas 1 letra, sendo ela m ou f maiúsculo ou minúsculo
             if len(dadoTemp) == 1 and dadoTemp in ['m', 'M', 'f', 'F'] :
-                #caso o usuário escreveu corretamente atribui o dado temporário para a variável dado
+                #caso o usuário escreveu corretamente, verifica se é MASCULINO ou FEMININO e atribui corretamente
+                if dadoTemp in ['m', 'M']:
+                    dadoTemp = 'Masculino'
+                else:
+                    dadoTemp = 'Feminino'
+
+                #atribui o dado temporário ao dado
                 dado = dadoTemp
                 #retorna dado, encerrando o looping
                 return dado
