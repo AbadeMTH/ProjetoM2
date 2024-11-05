@@ -73,6 +73,29 @@ def inputConsistente(perguntaInput, tipoDado):
                 input('Pressione ENTER para digitar novamente.')
                 #atribui uma string vazia para retornar o looping
                 dado = ''
+        #se o tipoDado especificado na chamada da função for 'cancelar'
+        elif tipoDado == 'cancelar':
+            #passamos um input de string para variável dadoTemp (dado temporário), com a perguntaInput passada por parâmetro
+            dadoTemp = input(f'\n{perguntaInput}')
+            #verificação se o usuário escreveu apenas 1 letra, sendo ela s ou n maiúsculo ou minúsculo
+            if len(dadoTemp) == 1 and dadoTemp in ['s', 'S', 'n', 'N'] :
+                #caso o usuário escreveu corretamente, verifica se é SIM ou NÃO e atribui corretamente
+                if dadoTemp in ['s', 'S']:
+                    dadoTemp = 'sim'
+                else:
+                    dadoTemp = 'não'
+                #atribui o dado temporário ao dado
+                dado = dadoTemp
+                #retorna dado, encerrando o looping
+                return dado
+            #caso usuário digitou errado
+            else:
+                #chamada da função que limpa o terminal
+                clearScreen()
+                print('\nDigite um texto válido.\n')
+                input('Pressione ENTER para digitar novamente.')
+                #atribui uma string vazia para retornar o looping
+                dado = ''
         #se o tipoDado especificado na chamada da função for 'int'
         elif tipoDado == 'int':
             #passamos um input de string para variável dadoTemp (dado temporário), com a perguntaInput passada por parâmetro
@@ -167,10 +190,29 @@ def criarAtendimento(cartãoSUS, data):
         sintomas = inputConsistente('Sintomas do paciente: ', 'str')
         convênio = inputConsistente('Convênio do paciente: ', 'str')
 
-        #adicionando os dados no dicionário local com o método update
-        data.update({cartãoSUS: [nm, cpf, idade, sexo, sintomas, convênio]})
-        print(f'\nAtendimento criado com sucesso.\n')
-        input('Pressione ENTER para voltar ao menu')
+        #input utilizando a função de inputConsistente para tratar o cancelamento ou confirmação do atendimento
+        confirmar = inputConsistente(f'''
+Dados do paciente:
+   | Nome: {nm}                      | CPF: {cpf}                                           | Idade: {idade}                  |
+   | Sexo: {sexo}                    | Sintomas: {sintomas}                                 | Convênio: {convênio}            |
+
+Para confirmar o atendimento digite:
+    (S) - Para CONFIRMAR
+    (N) - Para CANCELAR
+
+Digite:''', 'cancelar')
+
+        #se o usuário digitou corretamente e deseja cancelar o atendimento
+        if confirmar == 'não':
+            clearScreen()
+            print('\nAtendimento cancelado com sucesso!')
+            input('Pressione ENTER para voltar ao menu')
+        #caso o usuário queira confirmar o atendimento
+        else:
+            #adicionando os dados no dicionário local com o método update
+            data.update({cartãoSUS: [nm, cpf, idade, sexo, sintomas, convênio]})
+            print(f'\nAtendimento criado com sucesso.\n')
+            input('Pressione ENTER para voltar ao menu')
 
 #função que altera um atendimento baseado no cartãoSUS passado como parâmetro e adiciona o registro alterado no dicionário, salvando localmente
 def editarAtendimento(cartãoSUS,data):
@@ -193,10 +235,29 @@ def editarAtendimento(cartãoSUS,data):
         sintomas = inputConsistente('Sintomas do paciente: ', 'str')
         convênio = inputConsistente('Convênio do paciente: ', 'str')
 
-        #atualizando os dados no dicionário local com o método update 
-        data.update({cartãoSUS: [nm, cpf, idade, sexo, sintomas, convênio]  })
-        print(f'\nAtendimento alterado com sucesso.\n')
-        input('Pressione ENTER para voltar ao menu')
+        #input utilizando a função de inputConsistente para tratar o cancelamento ou confirmação da alteração do atendimento
+        confirmar = inputConsistente(f'''
+Dados do paciente:
+   | Nome: {nm}                      | CPF: {cpf}                                           | Idade: {idade}                  |
+   | Sexo: {sexo}                    | Sintomas: {sintomas}                                 | Convênio: {convênio}            |
+
+Para confirmar a alteração do atendimento digite:
+    (S) - Para CONFIRMAR
+    (N) - Para CANCELAR
+
+Digite:''', 'cancelar')
+
+        #se o usuário digitou corretamente e não deseja alterar o atendimento
+        if confirmar == 'não':
+            clearScreen()
+            print('\nAlteração cancelada com sucesso!')
+            input('Pressione ENTER para voltar ao menu')
+        #caso o usuário queira alterar o atendimento
+        else:
+            #atualizando os dados no dicionário local com o método update 
+            data.update({cartãoSUS: [nm, cpf, idade, sexo, sintomas, convênio]  })
+            print(f'\nAtendimento alterado com sucesso.\n')
+            input('Pressione ENTER para voltar ao menu')
 
 #função que remove um atendimento baseado no cartãoSUS passado como parâmetro
 def encerrarAtendimento(cartãoSUS, data):
@@ -208,10 +269,36 @@ def encerrarAtendimento(cartãoSUS, data):
         input('Digite ENTER para voltar ao menu.')
     #caso usuário digitou um cartãoSUS existente
     else:
-        #removendo o registro do dicionário local baseado no cartãoSUS digitado pelo usuário
-        data.pop(cartãoSUS)
-        print(f'\nAtendimento encerrado com sucesso.\n')
-        input('Pressione ENTER para voltar ao menu')
+        #looping for para passar por todo dicionário pegando chave e dados
+        for cartãoSUSDict, dados in data.items():
+            #se o cartãoSUS digitado pelo usuário for igual à um encontrado no dicionário local
+            if cartãoSUS == cartãoSUSDict:
+                #se o usuário digitou corretamente e deseja encerrar o atendimento
+                confirmar = inputConsistente(f'''
+        Dados do paciente:
+        | Nome: {dados[0]}                      | CPF: {dados[1]}                                           | Idade: {dados[2]}                  |
+        | Sexo: {dados[3]}                    | Sintomas: {dados[4]}                                 | Convênio: {dados[5]}            |
+
+        Para confirmar o encerramento do atendimento digite:
+            (S) - Para CONFIRMAR
+            (N) - Para CANCELAR
+
+        Digite:''', 'cancelar')
+
+                #se o usuário digitou corretamente e deseja cancelar o encerramento do atendimento
+                if confirmar == 'não':
+                    clearScreen()
+                    print('\nEncerramento de atendimento cancelado com sucesso!')
+                    input('Pressione ENTER para voltar ao menu')
+                #caso o usuário queira confirmar o encerramento do atendimento
+                else:
+                    #removendo o registro do dicionário local baseado no cartãoSUS digitado pelo usuário
+                    data.pop(cartãoSUS)
+                    print(f'\nAtendimento encerrado com sucesso.\n')
+                    input('Pressione ENTER para voltar ao menu')
+                    
+                return
+                
 
 #função que pesquisa um atendimento com base no cartãoSUS digitado pelo usuário
 def pesquisaAtendimento(cartãoSUS, data):

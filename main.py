@@ -55,7 +55,11 @@ while True: #programa principal em looping
             pesquisaAtendimento(cartãoSUS, dadosLocal)
         #caso o usuário seleciona Sair
         else:
-            #chamada da função que salva os dados do dicionário local à um TXT, tem como parâmetro o dicionário local
-            saveDados(dadosLocal)
-            #fim do looping
-            break
+            print('Obrigado por utilizar nosso aplicativo!')
+            confirmar = inputConsistente('S para sair | N para voltar: ', 'cancelar')
+            if confirmar == 'sim':
+                #chamada da função que salva os dados do dicionário local à um TXT, tem como parâmetro o dicionário local
+                saveDados(dadosLocal)
+                print('\nAté mais!')
+                #fim do looping
+                break
