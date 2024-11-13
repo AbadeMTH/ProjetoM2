@@ -1,336 +1,154 @@
-import re #importação da biblioteca para utilização de regex
-import os #importação da biblioteca para limpar o terminal
+import os
+import re
 
-def clearScreen(): #função que limpa o terminal baseado no sistema operacional
+ListaDados = []
+DicionárioPacientes = {}
+def clearScreen():
     if os.name == "posix":
         os.system("clear")
     elif os.name == "nt":
         os.system("cls")
 
-#função que pega os dados do TXT
-def getDados(): 
-    #abre o arquivo TXT como uma variável dadosTXT
-    with open('dados.txt', encoding='utf8') as dadosTXT: 
-        #atribui o resultado do método read do dadosTXT, transformado em string à variável data
-        data = str(dadosTXT.read()) 
-        #retorna a string de dados
-        return data 
+def getDados():
+    try:
+        with open("dados.txt", "r", encoding="utf-8") as dados:
+            for linha in dados:
+                ListaDados.append(linha.rstrip().split('|')) #rstrip() remove todos caracteres de controle a direita e split(',') separa os dados pela vírgula
+            
+            for dado in ListaDados:
+                DicionárioPacientes[int(dado[0])] = [dado[1], int(dado[2]), int(dado[3]), dado[4], dado[5], dado[6]] #passando dados da lista para dicionário
+            
+            return DicionárioPacientes
+    except FileNotFoundError:
+        return {}
 
-#função que salva os dados salvos localmente no TXT
-def saveDados(data): 
-    #abre o arquivo TXT como uma variável dadosTXT
+def saveDados(data):
     with open('dados.txt', 'w', encoding='utf8') as dadosTXT:
-        #salva o conteúdo do dicionário passado por parâmetro, transformado em string no arquivo TXT 
-        dadosTXT.write(str(data))
+        for chave, dados in data.items():
+            dadosTXT.write(f"{chave}|{dados[0]}|{dados[1]}|{dados[2]}|{dados[3]}|{dados[4]}|{dados[5]}\n")
+    
 
-#função que trata os inputs com regex de acordo com o tipo especificado e recebendo a string para a pergunta
 def inputConsistente(perguntaInput, tipoDado):
-    #criação de uma variável para controle do looping e atribuição do dado tratado
-    dado = ''
-    #looping enquanto o dado for vazio
-    while dado == '':
-        #chamada da função que limpa o terminal
+    while True:
         clearScreen()
-        #se o tipoDado especificado na chamada da função for 'str'
-        if tipoDado == 'str':
-            #passamos um input de string para variável dadoTemp (dado temporário), com a perguntaInput passada por parâmetro
-            dadoTemp = input(f'\n{perguntaInput}')
-            #verificação se o usuário escreveu apenas letras sem espaço no início e no final da string
-            if re.match(r'^[A-Za-z]+( [A-Za-z]+)*$', dadoTemp):
-                #caso o usuário escreveu corretamente atribui o dado temporário para a variável dado
-                dado = dadoTemp
-                #retorna dado, encerrando o looping
-                return dado
-            #caso usuário digitou errado
-            else:
-                #chamada da função que limpa o terminal
-                clearScreen()
-                print('\nDigite um texto válido.\n')
-                input('Pressione ENTER para digitar novamente.')
-                #atribui uma string vazia para retornar o looping
-                dado = ''
-        #se o tipoDado especificado na chamada da função for 'sexo'
-        elif tipoDado == 'sexo':
-            #passamos um input de string para variável dadoTemp (dado temporário), com a perguntaInput passada por parâmetro
-            dadoTemp = input(f'\n{perguntaInput}')
-            #verificação se o usuário escreveu apenas 1 letra, sendo ela m ou f maiúsculo ou minúsculo
-            if len(dadoTemp) == 1 and dadoTemp in ['m', 'M', 'f', 'F'] :
-                #caso o usuário escreveu corretamente, verifica se é MASCULINO ou FEMININO e atribui corretamente
-                if dadoTemp in ['m', 'M']:
-                    dadoTemp = 'Masculino'
-                else:
-                    dadoTemp = 'Feminino'
-
-                #atribui o dado temporário ao dado
-                dado = dadoTemp
-                #retorna dado, encerrando o looping
-                return dado
-            #caso usuário digitou errado
-            else:
-                #chamada da função que limpa o terminal
-                clearScreen()
-                print('\nDigite um texto válido.\n')
-                input('Pressione ENTER para digitar novamente.')
-                #atribui uma string vazia para retornar o looping
-                dado = ''
-        #se o tipoDado especificado na chamada da função for 'cancelar'
-        elif tipoDado == 'cancelar':
-            #passamos um input de string para variável dadoTemp (dado temporário), com a perguntaInput passada por parâmetro
-            dadoTemp = input(f'\n{perguntaInput}')
-            #verificação se o usuário escreveu apenas 1 letra, sendo ela s ou n maiúsculo ou minúsculo
-            if len(dadoTemp) == 1 and dadoTemp in ['s', 'S', 'n', 'N'] :
-                #caso o usuário escreveu corretamente, verifica se é SIM ou NÃO e atribui corretamente
-                if dadoTemp in ['s', 'S']:
-                    dadoTemp = 'sim'
-                else:
-                    dadoTemp = 'não'
-                #atribui o dado temporário ao dado
-                dado = dadoTemp
-                #retorna dado, encerrando o looping
-                return dado
-            #caso usuário digitou errado
-            else:
-                #chamada da função que limpa o terminal
-                clearScreen()
-                print('\nDigite um texto válido.\n')
-                input('Pressione ENTER para digitar novamente.')
-                #atribui uma string vazia para retornar o looping
-                dado = ''
-        #se o tipoDado especificado na chamada da função for 'int'
-        elif tipoDado == 'int':
-            #passamos um input de string para variável dadoTemp (dado temporário), com a perguntaInput passada por parâmetro
-            dadoTemp = input(f'\n{perguntaInput}')
-            #verificação se o usuário digitou apenas números
-            if re.match(r'^\d+$', dadoTemp):
-                #caso o usuário escreveu corretamente atribui o dado temporário para a variável dado como um número inteiro
-                dado = int(dadoTemp)
-                #retorna dado, encerrando o looping
-                return dado
-            #caso usuário digitou errado
-            else:
-                #chamada da função que limpa o terminal
-                clearScreen()
-                print('\nDigite um valor válido.')
-                input('Pressione ENTER para digitar novamente.')
-                #atribui uma string vazia para retornar o looping
-                dado = ''
-        #se o tipoDado especificado na chamada da função for 'cpf'
-        elif tipoDado == 'cpf':
-            #passamos um input de string para variável dadoTemp (dado temporário), com a perguntaInput passada por parâmetro
-            dadoTemp = input(f'\n{perguntaInput}')
-            #verificação se o usuário digitou apenas número e se o tamanho do cpf digitado é válido (cpf tem 11 dígitos)
-            if re.match(r'^\d+$', dadoTemp) and len(dadoTemp) == 11:
-                #caso o usuário escreveu corretamente atribui o dado temporário para a variável dado como um número inteiro
-                dado = int(dadoTemp)
-                #retorna dado, encerrando o looping
-                return dado
-            #caso usuário digitou errado
-            else:
-                #chamada da função que limpa o terminal
-                clearScreen()
-                print('\nDigite um valor válido.')
-                input('Pressione ENTER para digitar novamente.')
-                #atribui uma string vazia para retornar o looping
-                dado = ''
-        #se o tipoDado especificado na chamada da função for 'idade'
-        elif tipoDado == 'idade':
-            #passamos um input de string para variável dadoTemp (dado temporário), com a perguntaInput passada por parâmetro
-            dadoTemp = input(f'\n{perguntaInput}')
-            #verificação se o usuário digitou apenas números e se digitou um número de 1 a 3 dígitos (idade pode ser 9 anos, 17 anos, 101 anos por exemplo)
-            if re.match(r'^\d+$', dadoTemp) and len(dadoTemp) > 0 and len(dadoTemp) <= 3:
-                #caso o usuário escreveu corretamente atribui o dado temporário para a variável dado como um número inteiro
-                dado = int(dadoTemp)
-                #retorna dado, encerrando o looping
-                return dado
-            #caso usuário digitou errado
-            else:
-                #chamada da função que limpa o terminal
-                clearScreen()
-                print('\nDigite um valor válido.')
-                input('Pressione ENTER para digitar novamente.')
-                #atribui uma string vazia para retornar o looping
-                dado = ''
-                #se o tipoDado especificado na chamada da função for 'float'
-        elif tipoDado == 'float':
-            #passamos um input de string para variável dadoTemp (dado temporário), com a perguntaInput passada por parâmetro
-            dadoTemp = input(f'\n{perguntaInput}')
-            #verificação se o usuário digitou apenas números reais
-            if re.match(r'^\d+(\.\d+)?$', dadoTemp):
-                #caso o usuário escreveu corretamente atribui o dado temporário para a variável dado como um número real
-                dado = float(dadoTemp)
-                #retorna dado, encerrando o looping
-                return dado
-            #caso usuário digitou errado
-            else:
-                #chamada da função que limpa o terminal
-                clearScreen()
-                print('\nDigite um valor válido.')
-                input('Pressione ENTER para digitar novamente.')
-                #atribui uma string vazia para retornar o looping
-                dado = ''
-
-#função que cria um atendimento baseado no cartãoSUS passado como parâmetro e adiciona no dicionário, salvando localmente
-def criarAtendimento(cartãoSUS, data):
-    #chamada da função que limpa o terminal
-    clearScreen()
-    #se o cartãoSUS digitado pelo usuário já existir
-    if cartãoSUS in data:
-        #chamada da função que limpa o terminal
-        clearScreen()
-        #mensagem que o cartãoSUS digitado ja existe
-        print('\nJá existe um atendimento com esse cartão.\n')
-        input('Digite ENTER para voltar ao menu.')
-    #caso não exista ainda pergunta os dados e adiciona no dicionário localmente
-    else:
-        #inputs utilizando a função de inputConsistente para tratar os dados especificando a pergunta e o tipo do input como parâmetros
-        nm = inputConsistente('Nome do paciente: ', 'str')
-        cpf = inputConsistente('CPF do paciente: ', 'cpf')
-        idade = inputConsistente('Idade do paciente: ', 'idade')
-        sexo = inputConsistente('Sexo do paciente (M/F): ', 'sexo')
-        sintomas = inputConsistente('Sintomas do paciente: ', 'str')
-        convênio = inputConsistente('Convênio do paciente: ', 'str')
-
-        #input utilizando a função de inputConsistente para tratar o cancelamento ou confirmação do atendimento
-        confirmar = inputConsistente(f'''
-Dados do paciente:
-   | Nome: {nm}                      | CPF: {cpf}                                           | Idade: {idade}                  |
-   | Sexo: {sexo}                    | Sintomas: {sintomas}                                 | Convênio: {convênio}            |
-
-Para confirmar o atendimento digite:
-    (S) - Para CONFIRMAR
-    (N) - Para CANCELAR
-
-Digite:''', 'cancelar')
-
-        #se o usuário digitou corretamente e deseja cancelar o atendimento
-        if confirmar == 'não':
-            clearScreen()
-            print('\nAtendimento cancelado com sucesso!')
-            input('Pressione ENTER para voltar ao menu')
-        #caso o usuário queira confirmar o atendimento
-        else:
-            #adicionando os dados no dicionário local com o método update
-            data.update({cartãoSUS: [nm, cpf, idade, sexo, sintomas, convênio]})
-            print(f'\nAtendimento criado com sucesso.\n')
-            input('Pressione ENTER para voltar ao menu')
-
-#função que altera um atendimento baseado no cartãoSUS passado como parâmetro e adiciona o registro alterado no dicionário, salvando localmente
-def editarAtendimento(cartãoSUS,data):
-    #chamada da função que limpa o terminal
-    clearScreen()
-    #se o cartãoSUS digitado pelo usuário NÃO existir
-    if cartãoSUS not in data:
-        #mensagem de aviso que não existe o cartão digitado
-        print('\nNão existe um atendimento com esse cartão.\n')
-        input('Digite ENTER para voltar ao menu.')
-    #caso usuário digitou um cartãoSUS existente
-    else:
-        print(f'\nDigite em seguida a alteração dos dados relacionados ao cartão do SUS de número: {cartãoSUS}')
-
-        #inputs utilizando a função de inputConsistente para tratar os dados especificando a pergunta e o tipo do input como parâmetros
-        nm = inputConsistente('Nome do paciente: ', 'str')
-        cpf = inputConsistente('CPF do paciente: ', 'cpf')
-        idade = inputConsistente('Idade do paciente: ', 'idade')
-        sexo = inputConsistente('Sexo do paciente (M/F): ', 'sexo')
-        sintomas = inputConsistente('Sintomas do paciente: ', 'str')
-        convênio = inputConsistente('Convênio do paciente: ', 'str')
-
-        #input utilizando a função de inputConsistente para tratar o cancelamento ou confirmação da alteração do atendimento
-        confirmar = inputConsistente(f'''
-Dados do paciente:
-   | Nome: {nm}                      | CPF: {cpf}                                           | Idade: {idade}                  |
-   | Sexo: {sexo}                    | Sintomas: {sintomas}                                 | Convênio: {convênio}            |
-
-Para confirmar a alteração do atendimento digite:
-    (S) - Para CONFIRMAR
-    (N) - Para CANCELAR
-
-Digite:''', 'cancelar')
-
-        #se o usuário digitou corretamente e não deseja alterar o atendimento
-        if confirmar == 'não':
-            clearScreen()
-            print('\nAlteração cancelada com sucesso!')
-            input('Pressione ENTER para voltar ao menu')
-        #caso o usuário queira alterar o atendimento
-        else:
-            #atualizando os dados no dicionário local com o método update 
-            data.update({cartãoSUS: [nm, cpf, idade, sexo, sintomas, convênio]  })
-            print(f'\nAtendimento alterado com sucesso.\n')
-            input('Pressione ENTER para voltar ao menu')
-
-#função que remove um atendimento baseado no cartãoSUS passado como parâmetro
-def encerrarAtendimento(cartãoSUS, data):
-    #chamada da função que limpa o terminal
-    clearScreen()
-    #se o cartãoSUS digitado pelo usuário NÃO existir
-    if cartãoSUS not in data:
-        print('\nNão existe atendimento com esse cartão.\n')
-        input('Digite ENTER para voltar ao menu.')
-    #caso usuário digitou um cartãoSUS existente
-    else:
-        #looping for para passar por todo dicionário pegando chave e dados
-        for cartãoSUSDict, dados in data.items():
-            #se o cartãoSUS digitado pelo usuário for igual à um encontrado no dicionário local
-            if cartãoSUS == cartãoSUSDict:
-                #se o usuário digitou corretamente e deseja encerrar o atendimento
-                confirmar = inputConsistente(f'''
-        Dados do paciente:
-        | Nome: {dados[0]}                      | CPF: {dados[1]}                                           | Idade: {dados[2]}                  |
-        | Sexo: {dados[3]}                    | Sintomas: {dados[4]}                                 | Convênio: {dados[5]}            |
-
-        Para confirmar o encerramento do atendimento digite:
-            (S) - Para CONFIRMAR
-            (N) - Para CANCELAR
-
-        Digite:''', 'cancelar')
-
-                #se o usuário digitou corretamente e deseja cancelar o encerramento do atendimento
-                if confirmar == 'não':
-                    clearScreen()
-                    print('\nEncerramento de atendimento cancelado com sucesso!')
-                    input('Pressione ENTER para voltar ao menu')
-                #caso o usuário queira confirmar o encerramento do atendimento
-                else:
-                    #removendo o registro do dicionário local baseado no cartãoSUS digitado pelo usuário
-                    data.pop(cartãoSUS)
-                    print(f'\nAtendimento encerrado com sucesso.\n')
-                    input('Pressione ENTER para voltar ao menu')
-                    
-                return
-                
-
-#função que pesquisa um atendimento com base no cartãoSUS digitado pelo usuário
-def pesquisaAtendimento(cartãoSUS, data):
-    #chamada da função que limpa o terminal
-    clearScreen()
-    print('\nRegistro(s) de Cartão do SUS de acordo com o nome informado:\n')
-    
-    #se o cartãoSUS existir no dicionário local, mostra o registro
-    if cartãoSUS in data:
-        print(f'\nCartão do SUS: {cartãoSUS} | Nome: {data[cartãoSUS][0]} | CPF: {data[cartãoSUS][1]} | Idade: {data[cartãoSUS][2]} | Sexo: {data[cartãoSUS][3]} | Sintomas: {data[cartãoSUS][4]} | Convênio: {data[cartãoSUS][5]}\n')
-    #caso usuário digitou um cartãoSUS inexistente no dicionário local
-    else:
-        #mensagem de aviso que não existe registro com esse número de cartão
-        print(f'\nNenhum registro encontrado com o número de cartão do SUS>: {cartãoSUS}.')
-    
-    #para voltar ao menu nas 2 situações
-    input('\nDigite ENTER para continuar.')
-
-#função que mostra TODOS os atendimentos existentes no dicionário local
-def relatórioGeral(data):
-    #chamada da função que limpa o terminal
-    clearScreen()
-    #se o tamanho do dicionário local for 0 (não existe nada armazenado)
-    if len(data) == 0:
-        #mensagem de aviso que não existem atendimentos
-        print('\nNenhum registro encontrado.')
-        input('\nPressione ENTER para voltar ao menu.')
-    #caso existam atendimentos
-    else:
-        #para cara chave primária (cartãoSUS), registre cada um de seus dados na variável dados com o método items()
-        for cartãoSUS, dados in data.items():
-            #registro com chave primária e dados
-            print(f'\nCartão do SUS: {cartãoSUS} | Nome: {dados[0]} | CPF: {dados[1]} | Idade: {dados[2]} | Sexo: {dados[3]} | Sintomas: {dados[4]} | Convênio: {dados[5]}\n')
+        print("\033[1;34m╔════════════════════════════════════════════════════════════════╗\033[m")
+        print(f"\033[1;34m   🏥 {perguntaInput}                                           \033[m")
+        print("\033[1;34m╚════════════════════════════════════════════════════════════════╝\033[m")
         
-        input('\nPressione ENTER para voltar ao menu.')
+        dadoTemp = input(f'\033[1;32m📝 Digite: \033[m')
+        
+        if tipoDado == 'str' and re.match(r'^[A-Za-záàãâäéèêëíìîïóòôöõúùûüçÇ]+( [A-Za-záàãâäéèêëíìîïóòôöõúùûüçÇ]+)*$', dadoTemp) and len(dadoTemp) <= 50: #Regex aceita apenas letras com ou sem acentos ou cedilhas sem espaços no início e finall
+            return dadoTemp
+        elif tipoDado == 'sexo' and dadoTemp.lower() in ['m', 'f']:
+            return 'Masculino' if dadoTemp.lower() == 'm' else 'Feminino'
+        elif tipoDado == 'cancelar' and dadoTemp.lower() in ['s', 'n']:
+            return 'sim' if dadoTemp.lower() == 's' else 'não'
+        elif tipoDado == 'int' and dadoTemp.isdigit():
+            return int(dadoTemp)
+        elif tipoDado == 'cpf' and dadoTemp.isdigit() and len(dadoTemp) == 11:
+            return dadoTemp
+        elif tipoDado == 'idade' and dadoTemp.isdigit() and 0 < int(dadoTemp) < 120:
+            return int(dadoTemp)
+        elif tipoDado == 'sintomas' and re.match(r'^[A-Za-záàãâäéèêëíìîïóòôöõúùûüçÇ.,;:\- ]+( [A-Za-záàãâäéèêëíìîïóòôöõúùûüçÇ.,;:\- ]+)*$', dadoTemp) and len(dadoTemp) <= 180:
+            return dadoTemp
+        else:
+            print('\n❌ Valor inválido.\n')
+            input('Pressione ENTER para tentar novamente.')
+
+def criarAtendimento(cartaoSUS, data):
+    clearScreen()
+    print("\033[1;32m╔════════════════════════════════════════════════════════════╗ \033[m")
+    print("\033[1;32m              🚑 Criar Novo Atendimento                           \033[m")
+    print("\033[1;32m╚════════════════════════════════════════════════════════════╝ \033[m")
+    if cartaoSUS in data:
+        print('\n❌ Já existe um atendimento com esse cartão.\n')
+        input('Pressione ENTER para voltar ao menu.')
+    else:
+        nome = inputConsistente('Nome do paciente: ', 'str')
+        cpf = inputConsistente('CPF do paciente: ', 'cpf')
+        idade = inputConsistente('Idade do paciente: ', 'idade')
+        sexo = inputConsistente('Sexo do paciente (M/F): ', 'sexo')
+        sintomas = inputConsistente('Diga brevemente os sintomas do paciente (180 caracteres): ', 'sintomas')
+        convenio = inputConsistente('Convênio do paciente: ', 'str')
+        confirmar = inputConsistente('Deseja confirmar o atendimento? (S/N): ', 'cancelar')
+        
+        if confirmar == 'não':
+            print('\n❌ Atendimento cancelado com sucesso!')
+        else:
+            data[cartaoSUS] = [nome, cpf, idade, sexo, sintomas, convenio]
+            print('\n✅ Atendimento criado com sucesso.')
+        input('Pressione ENTER para voltar ao menu.')
+
+def editarAtendimento(cartaoSUS, data):
+    clearScreen()
+    print("\033[1;33m╔════════════════════════════════════════════════════════════╗\033[m")
+    print("\033[1;33m              ✏️ Editar Atendimento                           \033[m")
+    print("\033[1;33m╚════════════════════════════════════════════════════════════╝\033[m")
+    if cartaoSUS not in data:
+        print('\n❌ Não existe um atendimento com esse cartão.\n')
+        input('Pressione ENTER para voltar ao menu.')
+    else:
+        nome = inputConsistente('Altere o nome do paciente: ', 'str')
+        cpf = inputConsistente('Altere o CPF do paciente: ', 'cpf')
+        idade = inputConsistente('Altere a idade do paciente: ', 'idade')
+        sexo = inputConsistente('Altere o sexo do paciente (M/F): ', 'sexo')
+        sintomas = inputConsistente('Altere os sintomas do paciente: ', 'sintomas')
+        convenio = inputConsistente('Altere o convênio do paciente: ', 'str')
+        confirmar = inputConsistente('Deseja confirmar a alteração? (S/N): ', 'cancelar')
+        
+        if confirmar == 'não':
+            print('\n❌ Alteração cancelada com sucesso!')
+        else:
+            data[cartaoSUS] = [nome, cpf, idade, sexo, sintomas, convenio]
+            print('\n✅ Atendimento alterado com sucesso.')
+        input('Pressione ENTER para voltar ao menu.')
+
+def encerrarAtendimento(cartaoSUS, data):
+    clearScreen()
+    print("\033[1;31m╔════════════════════════════════════════════════════════════╗\033[m")
+    print("\033[1;31m               ⚠️ Encerrar Atendimento                        \033[m")
+    print("\033[1;31m╚════════════════════════════════════════════════════════════╝\033[m")
+    if cartaoSUS not in data:
+        print('\n❌ Não existe atendimento com esse cartão.\n')
+        input('Pressione ENTER para voltar ao menu.')
+    else:
+        confirmar = inputConsistente('Deseja encerrar o atendimento? (S/N): ', 'cancelar')
+        if confirmar == 'não':
+            print('\n❌ Encerramento de atendimento cancelado com sucesso!')
+        else:
+            data.pop(cartaoSUS)
+            print('\n✅ Atendimento encerrado com sucesso.')
+        input('Pressione ENTER para voltar ao menu.')
+
+def pesquisaAtendimento(cartaoSUS, data):
+    clearScreen()
+    print("\033[1;36m╔════════════════════════════════════════════════════════════╗\033[m")
+    print("\033[1;36m              🔍 Pesquisa por Cartão SUS                      \033[m")
+    print("\033[1;36m╚════════════════════════════════════════════════════════════╝\033[m")
+    if cartaoSUS in data:
+        paciente = data[cartaoSUS]
+        print('\033[1;36m╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗\n')
+        print(f'      🪪  \033[1;36m Cartão SUS: \033[m {cartaoSUS} \033[1;36m ‖ \033[m 🧍  \033[1;36m Nome: \033[m {paciente[0]} \033[1;36m ‖ \033[m 🆔  \033[1;36m CPF: \033[m {paciente[1]} \033[1;36m ‖ \033[m 🔢  \033[1;36m Idade: \033[m {paciente[2]} \033[1;36m ‖ \033[m ♂️♀️  \033[1;36m Sexo: \033[m {paciente[3]} \033[1;36m \n \033[m     🌡️  \033[1;36m Sintomas: \033[m {paciente[4]} \n      💳  \033[1;36m Convênio: \033[m {paciente[5]}\n')
+        print('\033[1;36m╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝')
+    else:
+        print(f'\n❌ Nenhum registro encontrado com o número de cartão do SUS: {cartaoSUS}.')
+    input('\nPressione ENTER para continuar.')
+
+def relatórioGeral(data):
+    clearScreen()
+    print("\033[1;35m╔════════════════════════════════════════════════════════════╗\033[m")
+    print("\033[1;35m                     📋 Relatório Geral                       \033[m")
+    print("\033[1;35m╚════════════════════════════════════════════════════════════╝\033[m")
+    if not data:
+        print('\n❌ Nenhum registro encontrado.')
+    else:
+        print('\n📋 Relatório Geral de Atendimentos:')
+        i = 0
+        print('\033[1;36m╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗\n')
+        for cartaoSUS, paciente in data.items():
+            print(f'      🪪  \033[1;36m Cartão SUS: \033[m {cartaoSUS} \033[1;36m ‖ \033[m 🧍  \033[1;36m Nome: \033[m {paciente[0]} \033[1;36m ‖ \033[m 🆔  \033[1;36m CPF: \033[m {paciente[1]} \033[1;36m ‖ \033[m 🔢  \033[1;36m Idade: \033[m {paciente[2]} \033[1;36m ‖ \033[m ♂️♀️  \033[1;36m Sexo: \033[m {paciente[3]} \033[1;36m \n \033[m     🌡️  \033[1;36m Sintomas: \033[m {paciente[4]} \n      💳  \033[1;36m Convênio: \033[m {paciente[5]}\n')
+            i = i + 1
+            if len(data.items()) > 1 and len(data.items()) > i :
+                print('\033[1;36m╠════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣\n')
+        print('\033[1;36m╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝')
+    input('\nPressione ENTER para continuar.')

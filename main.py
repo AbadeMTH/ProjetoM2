@@ -1,65 +1,56 @@
-from functions import * #importação das funções criadas em outro arquivo
+from colorama import Fore, init
+from functions import criarAtendimento, editarAtendimento, encerrarAtendimento, relatórioGeral, pesquisaAtendimento, inputConsistente, saveDados, getDados, clearScreen
 
-dadosLocal = {} #dicionário local
+init(autoreset=True)
 
-dados = getDados() #chamada de função que pega os dados armazenados no txt e retorna uma string, atribuímos essa string a uma variável
+dadosLocal = {}
 
-if len(dados) > 0: #caso exista dados no txt, formata a string para um dicionário
-    dadosLocal = eval(dados) #eval transforma a string em um dicionário, atribuímos isso ao dicionário local
-
-while True: #programa principal em looping
-    clearScreen() #função para limpar a tela
-
-    menuOpt = inputConsistente('''
-    Escolha uma opção:
-    1 - Criar atendimento
-    2 - Editar atendimento
-    3 - Encerrar atendimento
-    4 - Consultar atendimentos:
-    5 - Pesquisa por cartão do SUS
-    6 - Sair
-    ''', 'int') #criação de um menu utilizando o inputConsistente (função criada por nós), passando como parâmetro a string de pergunta e uma string do tipo do input
+if len(getDados()) > 0:
+    dadosLocal = getDados()
     
-    #condicional para aplicação do menu
+while True:
+    clearScreen()
+
+    menuOpt = inputConsistente(f'''🩺  Sistema de Atendimento Hospitalar
+
+    1 - 🆕 Criar atendimento
+    2 - ✏️  Editar atendimento
+    3 - ❌ Encerrar atendimento
+    4 - 📋 Consultar atendimentos
+    5 - 🔍 Pesquisa por cartão do SUS
+    6 - 🚪 Sair
+    ''', 'int') 
+
+
     if menuOpt not in [1, 2, 3, 4, 5, 6]: 
         clearScreen()
-        print('\nOpção inválida. Tente novamente.\n')
+        print(Fore.RED + "⚠️ Opção inválida, Tente novamente.\n")
     else:
-        #caso usuário selecione Criar atendimento
+        
         if menuOpt == 1: 
-            #atribuição do inputConsistente a variável
-            cartãoSUS = inputConsistente('Número do cartão SUS: ', 'int') 
-            #chamada de função de criação de atendimento que tem como parâmetro o cartãoSUS como identificador e o dicionário local para salvamento local dos dados
-            criarAtendimento(cartãoSUS, dadosLocal) 
-        #caso usuário selecione Editar atendimento
+            cartãoSUS = inputConsistente('🆔  Número do cartão SUS: ', 'int') 
+            criarAtendimento(cartãoSUS, dadosLocal)
+        
         elif menuOpt == 2:
-            #atribuição do inputConsistente a variável
-            cartãoSUS = inputConsistente('Digite o número do cartão SUS que deseja alterar: ', 'int')
-            #chamada de função de edição de atendimento que tem como parâmetro o cartãoSUS como identificador e o dicionário local para salvamento local dos dados
+            cartãoSUS = inputConsistente('✏️  Digite o número do cartão SUS que deseja alterar: ', 'int')
             editarAtendimento(cartãoSUS, dadosLocal)
-        #caso usuário selecione Encerrar atendimento
+        
         elif menuOpt == 3:
-            #atribuição do inputConsistente a variável
-            cartãoSUS = inputConsistente('Digite o número do cartão SUS que deseja remover: ', 'int')
-            #chamada de função de remoção de atendimento que tem como parâmetro o cartãoSUS como identificador e o dicionário local para salvamento local dos dados
+            cartãoSUS = inputConsistente('❌  Digite o número do cartão SUS que deseja remover: ', 'int')
             encerrarAtendimento(cartãoSUS, dadosLocal)
-        #caso usuário selecione Consultar atendimentos
-        elif menuOpt == 4:
-            #chamada de função de relatório geral que tem como parâmetro o dicionário local para listagem do mesmo
             relatórioGeral(dadosLocal)
-        #caso usuário selecione Pesquisa por cartão do SUS
+
+        elif menuOpt == 4:
+            relatórioGeral(dadosLocal)
+        
         elif menuOpt == 5:
-            #atribuição do inputConsistente a variável
-            cartãoSUS = inputConsistente('Número do cartão SUS: ', 'int')
-            #chamada de função de pesquisa de atendimento que tem como parâmetro o cartãoSUS como identificador e o dicionário local para checagem e salvamento dos dados
+            cartãoSUS = inputConsistente('🔍  Número do cartão SUS: ', 'int')
             pesquisaAtendimento(cartãoSUS, dadosLocal)
-        #caso o usuário seleciona Sair
+        
         else:
-            print('Obrigado por utilizar nosso aplicativo!')
-            confirmar = inputConsistente('S para sair | N para voltar: ', 'cancelar')
+            print(Fore.MAGENTA + "\n🙏  Obrigado por utilizar nosso aplicativo de atendimento hospitalar!")
+            confirmar = inputConsistente('📝  Confirme para sair:\n       (S) - Sim  | (N) - Não: ', 'cancelar')
             if confirmar == 'sim':
-                #chamada da função que salva os dados do dicionário local à um TXT, tem como parâmetro o dicionário local
                 saveDados(dadosLocal)
-                print('\nAté mais!')
-                #fim do looping
+                print(Fore.GREEN + '\n👋  Até mais! Cuide-se!')
                 break
