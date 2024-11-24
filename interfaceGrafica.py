@@ -2,6 +2,7 @@ import customtkinter
 from tkinter import *
 from tkinter import ttk
 from tkinter.messagebox import showinfo
+from tkinter.messagebox import askyesno
 from functions import getDados, saveDados
 from functionsInterfaceGrafica import inputConsistente
 
@@ -13,8 +14,10 @@ if len(getDados()) > 0:
 
 def RelatórioGeral():
     botaoEditar.configure(state='normal')
+    botaoEsconderRelatorio.configure(state='normal')
+    botaoEncerrar.configure(state='normal')
     treeview.delete(*treeview.get_children())
-    treeview.pack(padx= 10, pady= 10) 
+    treeview.place(relx=0.5, rely=0.4, anchor=N)
     #Carrega dados na Treview
     for chave,dados in dadosLocal.items():        
         i=[chave,dados[0],dados[1],dados[2],dados[3],dados[4],dados[5]]
@@ -22,38 +25,42 @@ def RelatórioGeral():
 
 def AdicionarAtendimento():
     treeview.delete(*treeview.get_children())
-    treeview.forget()
-    botaoEditar.configure(state='disabled')
-
+    treeview.place_forget()
+    
     #Desabilitando botões
     botaoRelatorio.configure(state='disabled')
     botaoEsconderRelatorio.configure(state='disabled')
     botaoSair.configure(state='disabled')
+    botaoEncerrar.configure(state='disabled')
+    botaoEditar.configure(state='disabled')
+    titulo.place_forget()
 
     #Colocando inputs na janela
-    lbl_cartaoSUS.pack(padx= 10, pady= 2)
-    cartaoSUS.pack(padx= 10, pady= 2)
+    tituloFormulario.place(relx=0.5, rely=0.35, anchor=CENTER)
 
-    lbl_nome.pack(padx= 10, pady= 2)
-    nome.pack(padx= 10, pady= 2)
+    lbl_cartaoSUS.place(relx=0.4, rely=0.39, anchor=CENTER)
+    cartaoSUS.place(relx=0.4, rely=0.42, anchor=CENTER)
 
-    lbl_cpf.pack(padx= 10, pady= 2)
-    cpf.pack(padx= 10, pady =2)
+    lbl_nome.place(relx=0.5, rely=0.39, anchor=CENTER)
+    nome.place(relx=0.5, rely=0.42, anchor=CENTER)
 
-    lbl_idade.pack(padx= 10, pady= 2)
-    idade.pack(padx= 10, pady= 2)
+    lbl_cpf.place(relx=0.6, rely=0.39, anchor=CENTER)
+    cpf.place(relx=0.6, rely=0.42, anchor=CENTER)
 
-    lbl_sexo.pack(padx= 10, pady= 2)
-    sexo.pack(padx= 10, pady= 2)
+    lbl_idade.place(relx=0.4, rely=0.46, anchor=CENTER)
+    idade.place(relx=0.4, rely=0.49, anchor=CENTER)
 
-    lbl_sintomas.pack(padx= 10, pady= 2)
-    sintomas.pack(padx= 10, pady= 2)
+    lbl_sexo.place(relx=0.5, rely=0.46, anchor=CENTER)
+    sexo.place(relx=0.5, rely=0.49, anchor=CENTER)
 
-    lbl_convenio.pack(padx= 10, pady= 2)
-    convenio.pack(padx= 10, pady= 2)
+    lbl_sintomas.place(relx=0.6, rely=0.46, anchor=CENTER)
+    sintomas.place(relx=0.6, rely=0.49, anchor=CENTER)
 
-    botaoSalvar.pack(padx= 10, pady= 2,)
-    botaoVoltar.pack(padx= 10, pady= 2)
+    lbl_convenio.place(relx=0.5, rely=0.53, anchor=CENTER)
+    convenio.place(relx=0.5, rely=0.56, anchor=CENTER)
+
+    botaoSalvar.place(relx=0.45, rely=0.61, anchor=CENTER)
+    botaoVoltar.place(relx=0.55, rely=0.61, anchor=CENTER)
 
 def SalvarAtendimento():
     #Reabilitando botões
@@ -199,41 +206,59 @@ def SalvarEdição():
 def Voltar():
     #Apagando tudo que não seja o menu
     treeview.delete(*treeview.get_children())
-    treeview.forget()
+    treeview.place_forget()
     #Apagando inputs e botão
-    lbl_cartaoSUS.forget()
-    cartaoSUS.forget()
+    lbl_cartaoSUS.place_forget()
+    cartaoSUS.place_forget()
     cartaoSUS.delete(0, END)
-    lbl_nome.forget()
-    nome.forget()
+    lbl_nome.place_forget()
+    nome.place_forget()
     nome.delete(0, END)
-    lbl_cpf.forget()
-    cpf.forget()
+    lbl_cpf.place_forget()
+    cpf.place_forget()
     cpf.delete(0, END)
-    lbl_idade.forget()
-    idade.forget()
+    lbl_idade.place_forget()
+    idade.place_forget()
     idade.delete(0, END)
-    lbl_sexo.forget()
-    sexo.forget()
+    lbl_sexo.place_forget()
+    sexo.place_forget()
     sexo.delete(0, END)
-    lbl_sintomas.forget()
-    sintomas.forget()
+    lbl_sintomas.place_forget()
+    sintomas.place_forget()
     sintomas.delete(0, END)
-    lbl_convenio.forget()
-    convenio.forget()
+    lbl_convenio.place_forget()
+    convenio.place_forget()
     convenio.delete(0, END)
-    botaoSalvar.forget()
-    botaoVoltar.forget()
-    botaoSalvarEdicao.forget()
+    botaoSalvar.place_forget()
+    botaoVoltar.place_forget()
+    botaoSalvarEdicao.place_forget()
+    tituloFormulario.place_forget()
+    titulo.place(relx=0.5, rely=0.35, anchor=CENTER)
 
     #Reabilitando botões
     botaoRelatorio.configure(state='normal')
-    botaoEsconderRelatorio.configure(state='normal')
     botaoSair.configure(state='normal')
+
+def EncerrarAtendimento():
+    if not treeview.focus():
+        showinfo(title='Atenção', message='Nenhum atendimento foi selecionado')
+        return
+    else:
+        item_selecionado = treeview.focus()
+        rowid = treeview.item(item_selecionado)
+        cartaoSUS_Excl = (rowid["values"][0])
+        resposta = askyesno(title='Confirmação', message='Certeza que deseja excluir esse atendimento?')
+        if resposta:
+            dadosLocal.pop(cartaoSUS_Excl)
+            showinfo(title='Sucesso', message='Atencimento encerrado com sucesso!')
+        else:
+            showinfo(title='Atenção', message='Atendimento não excluído')
 def FecharRelatório():
     treeview.delete(*treeview.get_children())
-    treeview.forget()
+    treeview.place_forget()
     botaoEditar.configure(state='disabled')
+    botaoEncerrar.configure(state='disabled')
+    botaoEsconderRelatorio.configure(state='disabled')
 
 def Sair():
     saveDados(dadosLocal)
@@ -243,7 +268,7 @@ customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("dark-blue")
 
 janela = customtkinter.CTk() #Criação da janela
-janela.geometry("500x300") #Definição do tamanho inicial
+janela.after(0, lambda:janela.state('zoomed'))
 
 columns=('Cartão SUS', 'Nome', 'CPF', 'Idade', 'Sexo', 'Sintomas', 'Convênio')
 treeview = ttk.Treeview(janela, columns=columns, show="headings")
@@ -264,30 +289,37 @@ treeview.heading('Convênio', text='Convênio')
 
 #Titulo
 titulo = customtkinter.CTkLabel(janela, text="Sistema de Atendimento Hospitalar") #Criação do titulo
-titulo.pack(padx = 10, pady = 10) #Inserindo o titulo na janela
+titulo.place(relx=0.5, rely=0.35, anchor=CENTER) #Inserindo o titulo na janela
 
 #Botões
 botaoRelatorio = customtkinter.CTkButton(janela, text="Relatório Geral", command=RelatórioGeral)
-botaoRelatorio.place(x=10, y=10)
-
-botaoAdicionar = customtkinter.CTkButton(janela, text="Adicionar Atendimento", command=AdicionarAtendimento)
-botaoAdicionar.place(x=10, y=50)
-
-botaoEditar = customtkinter.CTkButton(janela, text="Editar Atendimento", command=EditarAtendimento)
-botaoEditar.place(x=10, y=90)
-botaoEditar.configure(state='disabled')
+botaoRelatorio.place(relx=0.1, rely=0.35, anchor=NW)
 
 botaoEsconderRelatorio = customtkinter.CTkButton(janela, text="Fechar Relatório", command=FecharRelatório)
-botaoEsconderRelatorio.place(x=10, y=130)
+botaoEsconderRelatorio.place(relx=0.1, rely=0.40)
+botaoEsconderRelatorio.configure(state='disabled')
+
+botaoAdicionar = customtkinter.CTkButton(janela, text="Adicionar Atendimento", command=AdicionarAtendimento)
+botaoAdicionar.place(relx=0.1, rely=0.45, anchor=NW)
+
+botaoEditar = customtkinter.CTkButton(janela, text="Editar Atendimento", command=EditarAtendimento)
+botaoEditar.place(relx=0.1, rely=0.50, anchor=NW)
+botaoEditar.configure(state='disabled')
+
+botaoEncerrar = customtkinter.CTkButton(janela, text='Encerrar Atendimento', command=EncerrarAtendimento)
+botaoEncerrar.place(relx=0.1, rely=0.55, anchor=NW)
+botaoEncerrar.configure(state='disabled')
 
 botaoSair = customtkinter.CTkButton(janela, text="Sair", command=Sair)
-botaoSair.place(x=10, y=170)
+botaoSair.place(relx=0.1, rely=0.6, anchor=NW)
 
 botaoSalvar = customtkinter.CTkButton(janela, text="Salvar", command=SalvarAtendimento)
 
 botaoSalvarEdicao = customtkinter.CTkButton(janela, text="Salvar Edição", command=SalvarEdição)
 
 botaoVoltar = customtkinter.CTkButton(janela, text="Voltar", command=Voltar)
+
+tituloFormulario = customtkinter.CTkLabel(janela, text="Formulário de Atendimento")
 
 #Entrada de Dados
 lbl_cartaoSUS = customtkinter.CTkLabel(janela, text="Cartão SUS")
