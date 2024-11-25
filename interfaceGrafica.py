@@ -309,6 +309,8 @@ customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("dark-blue")
 
 janela = customtkinter.CTk() #Criação da janela
+janela.iconbitmap(default='icon.ico')
+janela.title('Atendimento Prático de Saúde')
 janela.after(0, lambda:janela.state('zoomed'))
 
 columns=('Cartão SUS', 'Nome', 'CPF', 'Idade', 'Sexo', 'Sintomas', 'Convênio')
