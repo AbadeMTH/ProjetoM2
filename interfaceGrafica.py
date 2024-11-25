@@ -18,7 +18,9 @@ def RelatórioGeral():
     botaoEncerrar.configure(state='normal')
     treeview.delete(*treeview.get_children())
     treeview.place(relx=0.5, rely=0.4, anchor=N)
-    #Carrega dados na Treview
+    instruçõesRolagem.place(relx=0.5, rely=0.65, anchor=CENTER)
+    instruçõesEdição.place(relx=0.5, rely=0.68, anchor=CENTER)
+    #Carrega dados na Treeview
     for chave,dados in dadosLocal.items():        
         i=[chave,dados[0],dados[1],dados[2],dados[3],dados[4],dados[5]]
         treeview.insert('', END, values=i)
@@ -33,7 +35,10 @@ def AdicionarAtendimento():
     botaoSair.configure(state='disabled')
     botaoEncerrar.configure(state='disabled')
     botaoEditar.configure(state='disabled')
+    botaoAdicionar.configure(state='disabled')
     titulo.place_forget()
+    instruçõesEdição.place_forget()
+    instruçõesRolagem.place_forget()
 
     #Colocando inputs na janela
     tituloFormulario.place(relx=0.5, rely=0.35, anchor=CENTER)
@@ -78,33 +83,41 @@ def SalvarAtendimento():
     Convenio = inputConsistente(convenio.get(),'str')
     if CartaoSUS == 'None' or Nome == 'None' or Cpf == 'None' or Idade == 'None' or Sexo == 'None' or Sintomas == 'None' or Convenio == 'None' :
         showinfo(title='Atenção', message='Algum dado está inválido')
+    elif CartaoSUS in dadosLocal:
+        showinfo(title='Atenção', message='O Cartão SUS digitado já existe!')
     else:
         dadosLocal[CartaoSUS] = [Nome, Cpf, Idade, Sexo, Sintomas, Convenio]
 
         #Apagando inputs e botão
-        lbl_cartaoSUS.forget()
-        cartaoSUS.forget()
+        lbl_cartaoSUS.place_forget()
+        cartaoSUS.place_forget()
         cartaoSUS.delete(0, END)
-        lbl_nome.forget()
-        nome.forget()
+        lbl_nome.place_forget()
+        nome.place_forget()
         nome.delete(0, END)
-        lbl_cpf.forget()
-        cpf.forget()
+        lbl_cpf.place_forget()
+        cpf.place_forget()
         cpf.delete(0, END)
-        lbl_idade.forget()
-        idade.forget()
+        lbl_idade.place_forget()
+        idade.place_forget()
         idade.delete(0, END)
-        lbl_sexo.forget()
-        sexo.forget()
+        lbl_sexo.place_forget()
+        sexo.place_forget()
         sexo.delete(0, END)
-        lbl_sintomas.forget()
-        sintomas.forget()
+        lbl_sintomas.place_forget()
+        sintomas.place_forget()
         sintomas.delete(0, END)
-        lbl_convenio.forget()
-        convenio.forget()
+        lbl_convenio.place_forget()
+        convenio.place_forget()
         convenio.delete(0, END)
-        botaoSalvar.forget()
-        botaoVoltar.forget()
+        botaoSalvar.place_forget()
+        botaoVoltar.place_forget()
+        tituloFormulario.place_forget()
+        titulo.place(relx=0.5, rely=0.35, anchor=CENTER) 
+        botaoEsconderRelatorio.configure(state='disabled')
+        botaoAdicionar.configure(state='normal')
+
+        showinfo('Sucesso!', 'Atendimento adicionado com sucesso!')
     
 def EditarAtendimento():
     global CartaoSUS_Alt
@@ -122,7 +135,16 @@ def EditarAtendimento():
     convenio.delete(0, END)
     if not treeview.focus():
         showinfo(title='ERRO', message='Selecione um item para Alteração')
+        RelatórioGeral()
     else:
+        instruçõesEdição.place_forget()
+        instruçõesRolagem.place_forget()
+        botaoRelatorio.configure(state='disabled')
+        botaoEsconderRelatorio.configure(state='disabled')
+        botaoAdicionar.configure(state='disabled')
+        botaoEditar.configure(state='disabled')
+        botaoEncerrar.configure(state='disabled')
+        botaoSair.configure(state='disabled')
         # Coletando qual item está selecionado.
         item_selecionado = treeview.focus()
         rowid = treeview.item(item_selecionado)
@@ -133,33 +155,38 @@ def EditarAtendimento():
         Sexo_Alt = (rowid["values"][4])
         Sintomas_Alt = (rowid["values"][5])
         Convenio_Alt = (rowid["values"][6])
+        
+        treeview.place_forget()
 
-        lbl_nome.pack(padx= 10, pady= 2)
+        titulo.place_forget()
+        tituloFormularioAlt.place(relx=0.5, rely=0.35, anchor=CENTER)
+
+        lbl_nome.place(relx=0.4, rely=0.39, anchor=CENTER)
         nome.insert(0, Nome_Alt)
-        nome.pack(padx= 10, pady= 2)
+        nome.place(relx=0.4, rely=0.42, anchor=CENTER)
 
-        lbl_cpf.pack(padx= 10, pady= 2)
+        lbl_cpf.place(relx=0.5, rely=0.39, anchor=CENTER)
         cpf.insert(0, Cpf_Alt)
-        cpf.pack(padx= 10, pady =2)
+        cpf.place(relx=0.5, rely=0.42, anchor=CENTER)
 
-        lbl_idade.pack(padx= 10, pady= 2)
+        lbl_idade.place(relx=0.6, rely=0.39, anchor=CENTER)
         idade.insert(0, Idade_Alt)
-        idade.pack(padx= 10, pady= 2)
+        idade.place(relx=0.6, rely=0.42, anchor=CENTER)
 
-        lbl_sexo.pack(padx= 10, pady= 2)
+        lbl_sexo.place(relx=0.4, rely=0.46, anchor=CENTER)
         sexo.insert(0, Sexo_Alt)
-        sexo.pack(padx= 10, pady= 2)
+        sexo.place(relx=0.4, rely=0.49, anchor=CENTER)
 
-        lbl_sintomas.pack(padx= 10, pady= 2)
+        lbl_sintomas.place(relx=0.5, rely=0.46, anchor=CENTER)
         sintomas.insert(0, Sintomas_Alt)
-        sintomas.pack(padx= 10, pady= 2)
+        sintomas.place(relx=0.5, rely=0.49, anchor=CENTER)
 
-        lbl_convenio.pack(padx= 10, pady= 2)
+        lbl_convenio.place(relx=0.6, rely=0.46, anchor=CENTER)
         convenio.insert(0, Convenio_Alt)
-        convenio.pack(padx= 10, pady= 2)
+        convenio.place(relx=0.6, rely=0.49, anchor=CENTER)
 
-        botaoSalvarEdicao.pack(padx=10, pady= 2)
-        botaoVoltar.pack(padx=10, pady= 2)
+        botaoSalvarEdicao.place(relx=0.45, rely=0.54, anchor=CENTER)
+        botaoVoltar.place(relx=0.55, rely=0.54, anchor=CENTER)
 
 def SalvarEdição():
     #Salvando dados
@@ -179,29 +206,34 @@ def SalvarEdição():
         treeview.delete(*treeview.get_children())
         treeview.forget()
         #Apagando inputs e botão
-        lbl_cartaoSUS.forget()
-        cartaoSUS.forget()
+        lbl_cartaoSUS.place_forget()
+        cartaoSUS.place_forget()
         cartaoSUS.delete(0, END)
-        lbl_nome.forget()
-        nome.forget()
+        lbl_nome.place_forget()
+        nome.place_forget()
         nome.delete(0, END)
-        lbl_cpf.forget()
-        cpf.forget()
+        lbl_cpf.place_forget()
+        cpf.place_forget()
         cpf.delete(0, END)
-        lbl_idade.forget()
-        idade.forget()
+        lbl_idade.place_forget()
+        idade.place_forget()
         idade.delete(0, END)
-        lbl_sexo.forget()
-        sexo.forget()
+        lbl_sexo.place_forget()
+        sexo.place_forget()
         sexo.delete(0, END)
-        lbl_sintomas.forget()
-        sintomas.forget()
+        lbl_sintomas.place_forget()
+        sintomas.place_forget()
         sintomas.delete(0, END)
-        lbl_convenio.forget()
-        convenio.forget()
+        lbl_convenio.place_forget()
+        convenio.place_forget()
         convenio.delete(0, END)
-        botaoSalvar.forget()
-        botaoVoltar.forget()
+        botaoSalvarEdicao.place_forget()
+        botaoVoltar.place_forget()
+        botaoRelatorio.configure(state='normal')
+        botaoAdicionar.configure(state='normal')
+        botaoSair.configure(state='normal')
+
+        RelatórioGeral()
 
 def Voltar():
     #Apagando tudo que não seja o menu
@@ -233,7 +265,11 @@ def Voltar():
     botaoVoltar.place_forget()
     botaoSalvarEdicao.place_forget()
     tituloFormulario.place_forget()
+    tituloFormularioAlt.place_forget()
+    instruçõesEdição.place_forget()
+    instruçõesRolagem.place_forget()
     titulo.place(relx=0.5, rely=0.35, anchor=CENTER)
+    botaoAdicionar.configure(state='normal')
 
     #Reabilitando botões
     botaoRelatorio.configure(state='normal')
@@ -251,18 +287,23 @@ def EncerrarAtendimento():
         if resposta:
             dadosLocal.pop(cartaoSUS_Excl)
             showinfo(title='Sucesso', message='Atencimento encerrado com sucesso!')
+            RelatórioGeral()
         else:
             showinfo(title='Atenção', message='Atendimento não excluído')
 def FecharRelatório():
     treeview.delete(*treeview.get_children())
     treeview.place_forget()
+    instruçõesEdição.place_forget()
+    instruçõesRolagem.place_forget()
     botaoEditar.configure(state='disabled')
     botaoEncerrar.configure(state='disabled')
     botaoEsconderRelatorio.configure(state='disabled')
 
 def Sair():
-    saveDados(dadosLocal)
-    janela.destroy() #Destrói a janela
+    resposta = askyesno(title='Sair e Salvar', message='Deseja sair do programa e salvar?')
+    if resposta:
+        saveDados(dadosLocal)
+        janela.destroy() #Destrói a janela
 
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("dark-blue")
@@ -272,13 +313,13 @@ janela.after(0, lambda:janela.state('zoomed'))
 
 columns=('Cartão SUS', 'Nome', 'CPF', 'Idade', 'Sexo', 'Sintomas', 'Convênio')
 treeview = ttk.Treeview(janela, columns=columns, show="headings")
-treeview.column('#1', width=100)
-treeview.column('#2', width=200)
-treeview.column('#3', width=200)
-treeview.column('#4', width=100)
-treeview.column('#5', width=100)
-treeview.column('#6', width=100)
-treeview.column('#7', width=100)
+treeview.column('#1', width=80, anchor=CENTER)
+treeview.column('#2', width=200, anchor=CENTER)
+treeview.column('#3', width=100, anchor=CENTER)
+treeview.column('#4', width=50, anchor=CENTER)
+treeview.column('#5', width=80, anchor=CENTER)
+treeview.column('#6', width=600, anchor=CENTER)
+treeview.column('#7', width=100, anchor=CENTER)
 treeview.heading('Cartão SUS', text='Cartão SUS')
 treeview.heading('Nome', text='Nome')
 treeview.heading('CPF', text='CPF')
@@ -288,7 +329,7 @@ treeview.heading('Sintomas', text='Sintomas')
 treeview.heading('Convênio', text='Convênio')
 
 #Titulo
-titulo = customtkinter.CTkLabel(janela, text="Sistema de Atendimento Hospitalar") #Criação do titulo
+titulo = customtkinter.CTkLabel(janela, text="Sistema de Atendimento Hospitalar", font=('',20)) #Criação do titulo
 titulo.place(relx=0.5, rely=0.35, anchor=CENTER) #Inserindo o titulo na janela
 
 #Botões
@@ -310,7 +351,7 @@ botaoEncerrar = customtkinter.CTkButton(janela, text='Encerrar Atendimento', com
 botaoEncerrar.place(relx=0.1, rely=0.55, anchor=NW)
 botaoEncerrar.configure(state='disabled')
 
-botaoSair = customtkinter.CTkButton(janela, text="Sair", command=Sair)
+botaoSair = customtkinter.CTkButton(janela, text="Sair e Salvar", command=Sair)
 botaoSair.place(relx=0.1, rely=0.6, anchor=NW)
 
 botaoSalvar = customtkinter.CTkButton(janela, text="Salvar", command=SalvarAtendimento)
@@ -319,7 +360,12 @@ botaoSalvarEdicao = customtkinter.CTkButton(janela, text="Salvar Edição", comm
 
 botaoVoltar = customtkinter.CTkButton(janela, text="Voltar", command=Voltar)
 
-tituloFormulario = customtkinter.CTkLabel(janela, text="Formulário de Atendimento")
+tituloFormulario = customtkinter.CTkLabel(janela, text="Formulário de Atendimento", font=('',20))
+
+tituloFormularioAlt = customtkinter.CTkLabel(janela, text='Altere os dados do Atendimento', font=('',20))
+
+instruçõesRolagem = customtkinter.CTkLabel(janela, text='Role a rodinha do mouse para navegar no relatório', font=('',14))
+instruçõesEdição = customtkinter.CTkLabel(janela, text='Selecione um item para editar', font=('',14))
 
 #Entrada de Dados
 lbl_cartaoSUS = customtkinter.CTkLabel(janela, text="Cartão SUS")
