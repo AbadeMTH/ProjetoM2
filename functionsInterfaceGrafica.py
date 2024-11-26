@@ -6,8 +6,6 @@ def inputConsistente(dado, tipoDado):
         return dado
     elif tipoDado == 'sexo' and dado.lower() in ['m', 'f', 'feminino', 'masculino']:
         return 'Masculino' if dado.lower() == 'm' else 'Feminino'
-    # elif tipoDado == 'cancelar' and dado.lower() in ['s', 'n']:
-    #     return 'sim' if dado.lower() == 's' else 'não'
     elif tipoDado == 'int' and dado.isdigit():
         return int(dado)
     elif tipoDado == 'cpf' and dado.isdigit() and len(dado) == 11:

@@ -12,7 +12,7 @@ dadosLocal = {}
 if len(getDados()) > 0:
     dadosLocal = getDados()
 
-def RelatórioGeral():
+def RelatórioGeral(): #Função que manipula algumas coisas da interface e mostra os dados do programa em uma tabela por meio de uma treeview
     botaoEditar.configure(state='normal')
     botaoEsconderRelatorio.configure(state='normal')
     botaoEncerrar.configure(state='normal')
@@ -21,11 +21,11 @@ def RelatórioGeral():
     instruçõesRolagem.place(relx=0.5, rely=0.65, anchor=CENTER)
     instruçõesEdição.place(relx=0.5, rely=0.68, anchor=CENTER)
     #Carrega dados na Treeview
-    for chave,dados in dadosLocal.items():        
+    for chave,dados in dadosLocal.items(): #Looping que insere os dados na tabela   
         i=[chave,dados[0],dados[1],dados[2],dados[3],dados[4],dados[5]]
         treeview.insert('', END, values=i)
 
-def AdicionarAtendimento():
+def AdicionarAtendimento(): #Função que manipula a interface e prepara para a adição do novo atendimento
     treeview.delete(*treeview.get_children())
     treeview.place_forget()
     
@@ -67,7 +67,7 @@ def AdicionarAtendimento():
     botaoSalvar.place(relx=0.45, rely=0.61, anchor=CENTER)
     botaoVoltar.place(relx=0.55, rely=0.61, anchor=CENTER)
 
-def SalvarAtendimento():
+def SalvarAtendimento(): #Função que salva o novo atendimento feito pelo usuário
     #Reabilitando botões
     botaoRelatorio.configure(state='normal')
     botaoEsconderRelatorio.configure(state='normal')
@@ -118,8 +118,9 @@ def SalvarAtendimento():
         botaoAdicionar.configure(state='normal')
 
         showinfo('Sucesso!', 'Atendimento adicionado com sucesso!')
+        saveDados(dadosLocal)
     
-def EditarAtendimento():
+def EditarAtendimento(): #Função que manipula a interface e prepara para a edição do atendimento existente
     global CartaoSUS_Alt
     global Nome_Alt
     global Cpf_Alt
@@ -188,7 +189,7 @@ def EditarAtendimento():
         botaoSalvarEdicao.place(relx=0.45, rely=0.54, anchor=CENTER)
         botaoVoltar.place(relx=0.55, rely=0.54, anchor=CENTER)
 
-def SalvarEdição():
+def SalvarEdição(): #Função que salva a edição do atendimento feita pelo usuário
     #Salvando dados
     Nome_Alt = inputConsistente(nome.get(),'str')
     Cpf_Alt = inputConsistente(cpf.get(), 'cpf')
@@ -234,8 +235,9 @@ def SalvarEdição():
         botaoSair.configure(state='normal')
 
         RelatórioGeral()
+        saveDados(dadosLocal)
 
-def Voltar():
+def Voltar(): #Função que manipula toda interface para voltar ao estado inicial
     #Apagando tudo que não seja o menu
     treeview.delete(*treeview.get_children())
     treeview.place_forget()
@@ -275,7 +277,7 @@ def Voltar():
     botaoRelatorio.configure(state='normal')
     botaoSair.configure(state='normal')
 
-def EncerrarAtendimento():
+def EncerrarAtendimento(): #Função que exclui o atendimento selecionado pelo usuário
     if not treeview.focus():
         showinfo(title='Atenção', message='Nenhum atendimento foi selecionado')
         return
@@ -288,9 +290,10 @@ def EncerrarAtendimento():
             dadosLocal.pop(cartaoSUS_Excl)
             showinfo(title='Sucesso', message='Atencimento encerrado com sucesso!')
             RelatórioGeral()
+            saveDados(dadosLocal)
         else:
             showinfo(title='Atenção', message='Atendimento não excluído')
-def FecharRelatório():
+def FecharRelatório(): #Função que esconde a tabela de dados
     treeview.delete(*treeview.get_children())
     treeview.place_forget()
     instruçõesEdição.place_forget()
@@ -299,20 +302,23 @@ def FecharRelatório():
     botaoEncerrar.configure(state='disabled')
     botaoEsconderRelatorio.configure(state='disabled')
 
-def Sair():
+def Sair(): #Função que faz a saída do programa
     resposta = askyesno(title='Sair e Salvar', message='Deseja sair do programa e salvar?')
     if resposta:
         saveDados(dadosLocal)
         janela.destroy() #Destrói a janela
 
+#Definições de temas
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("dark-blue")
 
+#Definição para a tela do programa
 janela = customtkinter.CTk() #Criação da janela
-janela.iconbitmap(default='icon.ico')
-janela.title('Atendimento Prático de Saúde')
-janela.after(0, lambda:janela.state('zoomed'))
+janela.iconbitmap(default='icon.ico') #Troca do icone padrão para um ícone chamado icon
+janela.title('Atendimento Prático de Saúde') #Troca do título do programa
+janela.after(0, lambda:janela.state('zoomed')) #Aplicando a tela em tamanho máximo possísvel ao abrir   
 
+#Definição da treeview (tabela) e suas colunas
 columns=('Cartão SUS', 'Nome', 'CPF', 'Idade', 'Sexo', 'Sintomas', 'Convênio')
 treeview = ttk.Treeview(janela, columns=columns, show="headings")
 treeview.column('#1', width=80, anchor=CENTER)
@@ -362,6 +368,7 @@ botaoSalvarEdicao = customtkinter.CTkButton(janela, text="Salvar Edição", comm
 
 botaoVoltar = customtkinter.CTkButton(janela, text="Voltar", command=Voltar)
 
+#Títulos
 tituloFormulario = customtkinter.CTkLabel(janela, text="Formulário de Atendimento", font=('',20))
 
 tituloFormularioAlt = customtkinter.CTkLabel(janela, text='Altere os dados do Atendimento', font=('',20))
@@ -391,4 +398,4 @@ sintomas = customtkinter.CTkEntry(janela, placeholder_text="Sintomas")
 lbl_convenio = customtkinter.CTkLabel(janela, text="Convênio")
 convenio = customtkinter.CTkEntry(janela, placeholder_text="Convênio")
 
-janela.mainloop() #Rodar a janela
+janela.mainloop() #Rodar o programa

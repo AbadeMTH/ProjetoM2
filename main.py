@@ -36,15 +36,18 @@ while True:
         if menuOpt == 1: #Criar atendimento
             cartãoSUS = inputConsistente('🆔  Número do cartão SUS: ', 'int') 
             criarAtendimento(cartãoSUS, dadosLocal)
+            saveDados(dadosLocal)
         
         elif menuOpt == 2: #Editar atendimento
             cartãoSUS = inputConsistente('✏️  Digite o número do cartão SUS que deseja alterar: ', 'int')
             editarAtendimento(cartãoSUS, dadosLocal)
+            saveDados(dadosLocal)
         
         elif menuOpt == 3: #Encerrar atendimento
             cartãoSUS = inputConsistente('❌  Digite o número do cartão SUS que deseja remover: ', 'int')
             encerrarAtendimento(cartãoSUS, dadosLocal)
             relatórioGeral(dadosLocal)
+            saveDados(dadosLocal)
 
         elif menuOpt == 4: #Consultar atendimentos
             relatórioGeral(dadosLocal)
